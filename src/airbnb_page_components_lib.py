@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import time
 import bs4
 import selenium
+import re
 import pdb
 
 
@@ -41,13 +42,24 @@ def get_amenities(soup):
                         if isinstance(amenity.contents[0], bs4.element.NavigableString)]
     return amenities_list
 
+def get_rooms(soup):
+    div = soup.select('div._tqmy57')
+    spans = div[0].select('span')
+    span_strings = [re.sub(r'\D+', '', str(span.string)) for span in spans]
+    guests = int(span_strings[0])
+    bedrooms = int(span_strings[2])
+    beds = int(span_strings[4])
+    baths = int(span_strings[6])
+    # pdb.set_trace()
+    return (guests, bedrooms, beds, baths)
+
 class TestPageComponents(unittest.TestCase):
 
     driver = setup_webdriver(width=1100, height=1020)
     soup = get_page(format_url(BASE_URL,
                               offset=0, 
                               start_date=datetime.now() + timedelta(days=90),
-                              end_date=datetime.now() + timedelta(days=90),
+                              end_date=datetime.now() + timedelta(days=93),
                               min_price=0,
                               max_price=20), driver)
 
@@ -71,9 +83,20 @@ class TestPageComponents(unittest.TestCase):
         elem = get_amenities_elem(self.driver)
         elem.click()
         time.sleep(1)
-        soup = bs4.BeautifulSoup(self.driver.page_source)
-        get_amenities(soup)
+        soup = bs4.BeautifulSoup(self.driver.page_source, features='html.parser')
+        print(get_amenities(soup))
 
+    def test_getRooms(self):
+        stays = get_page_stays_list(self.soup)
+        link = 'https://www.airbnb.com' + relative_link(stays[0])
+        self.driver.get(link)
+        time.sleep(5)
+        soup = bs4.BeautifulSoup(self.driver.page_source, features='html.parser')
+        rooms = get_rooms(soup)
+        self.assertIsInstance(rooms[0], int)
+        self.assertIsInstance(rooms[1], int)
+        self.assertIsInstance(rooms[2], int)
+        self.assertIsInstance(rooms[3], int)
 
 if __name__ == '__main__':
     
