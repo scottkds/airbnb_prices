@@ -32,8 +32,8 @@ def format_url(url, offset=0, start_date=datetime(2021, 1, 1), end_date=datetime
 
 def setup_webdriver(width=800, height=600):
     """Opens a chrome window and sets the size of the window. The webdriver object is returned."""
-    driver = selenium.webdriver.Firefox()
-    # driver = selenium.webdriver.Chrome()
+    # driver = selenium.webdriver.Firefox()
+    driver = selenium.webdriver.Chrome()
     driver.set_window_size(width, height, windowHandle='current')
     time.sleep(1)
     return driver
