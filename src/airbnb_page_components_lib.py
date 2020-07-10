@@ -53,6 +53,14 @@ def get_rooms(soup):
     # pdb.set_trace()
     return (guests, bedrooms, beds, baths)
 
+def get_prices(soup):
+    div = soup.select('div._ud8a1c')[0]
+    # price = span._pgfqnw
+    # stars = button._pgfqnw
+    # cleaning fee = span._ra05uc
+    # long stay discount = span._l1ngr4
+    # superhost = span._nu65sd
+
 class TestPageComponents(unittest.TestCase):
 
     driver = setup_webdriver(width=1100, height=1020)
