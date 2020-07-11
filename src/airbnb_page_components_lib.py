@@ -55,11 +55,15 @@ def get_rooms(soup):
 
 def get_prices(soup):
     div = soup.select('div._ud8a1c')[0]
-    # price = span._pgfqnw
-    # stars = button._pgfqnw
-    # cleaning fee = span._ra05uc
-    # long stay discount = span._l1ngr4
-    # superhost = span._nu65sd
+    price = soup.select('span._pgfqnw')[0]
+    stars = soup.select('button._1wlymrds')[0]
+    cleaning_fee = soup.select('span._ra05uc')[0]
+    try:
+        long_stay_discount = soup.select('span._l1ngr4')[0]
+    except IndexError:
+        long_stay_discount = 0
+    superhost = soup.select('span._nu65sd')
+    pdb.set_trace()
 
 class TestPageComponents(unittest.TestCase):
 
@@ -102,9 +106,22 @@ class TestPageComponents(unittest.TestCase):
         soup = bs4.BeautifulSoup(self.driver.page_source, features='html.parser')
         rooms = get_rooms(soup)
         self.assertIsInstance(rooms[0], int)
+        self.assertTrue(rooms[0] > 0)
         self.assertIsInstance(rooms[1], int)
+        self.assertTrue(rooms[1] > 0)
         self.assertIsInstance(rooms[2], int)
+        self.assertTrue(rooms[2] > 0)
         self.assertIsInstance(rooms[3], int)
+        self.assertTrue(rooms[3] > 0)
+
+    def test_getPrices(self):
+        stays = get_page_stays_list(self.soup)
+        link = 'https://www.airbnb.com' + relative_link(stays[0])
+        self.driver.get(link)
+        time.sleep(5)
+        soup = bs4.BeautifulSoup(self.driver.page_source, features='html.parser')
+        rooms = get_prices(soup)
+
 
 if __name__ == '__main__':
     
