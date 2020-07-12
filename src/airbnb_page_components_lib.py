@@ -44,12 +44,16 @@ def get_amenities_elem(driver):
     return elem
 
 def get_amenities(soup):
+    """Gets the amenities listed after clicking he "Show All Amenities" button
+    on the page. Returns a list."""
     amenities = soup.select('div._vzrbjl')
     amenities_list = [amenity.contents[0] for amenity in amenities \
                         if isinstance(amenity.contents[0], bs4.element.NavigableString)]
     return amenities_list
 
 def get_rooms(soup):
+    """Returns the number of guests, bedrooms, beds, and bathrooms the stay
+    has."""
     div = soup.select('div._tqmy57')
     spans = div[0].select('span')
     span_strings = [re.sub(r'\D+', '', str(span.string)) for span in spans]
@@ -57,7 +61,6 @@ def get_rooms(soup):
     bedrooms = int(span_strings[2])
     beds = int(span_strings[4])
     baths = int(span_strings[6])
-    # pdb.set_trace()
     return (guests, bedrooms, beds, baths)
 
 def get_price_summary_info(soup):
@@ -73,6 +76,7 @@ def get_price_summary_info(soup):
         return False
 
     def get_price_as_int(price_tag):
+        """Parses out the price for the stay and returns it as an int."""
         price = str(price_tag.string)
         price = price.replace('$', '')
         price = int(price)
@@ -117,6 +121,7 @@ def get_price_summary_info(soup):
     superhost = is_super_host(soup.select('span._nu65sd'))
 
 class TestPageComponents(unittest.TestCase):
+    """ Unit tests for page components."""
 
     def setUp(self):
         self.driver = setup_webdriver(width=1100, height=1020)
@@ -140,6 +145,7 @@ class TestPageComponents(unittest.TestCase):
         self.assertEqual(link[:7], '/rooms/')
 
     def test_getAmenitiesElem(self):
+        """This test will take a few minutes to run."""
         stays = get_page_stays_list(self.soup)
         for stay in stays:
             link = 'https://www.airbnb.com' + relative_link(stay)
@@ -149,7 +155,8 @@ class TestPageComponents(unittest.TestCase):
             elem.click()
             time.sleep(1)
             soup = bs4.BeautifulSoup(self.driver.page_source, features='html.parser')
-            print(get_amenities(soup))
+            amenities = get_amenities(soup)
+            self.assertIsInstance(amenities, list)
             self.driver.back()
 
     def test_getRooms(self):
@@ -181,15 +188,5 @@ class TestPageComponents(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    
-    driver = setup_webdriver(width=1100, height=1020)
-    
-    src = get_page(format_url(BASE_URL,
-                              offset=0, 
-                              start_date=datetime.now() + timedelta(days=90),
-                              end_date=datetime.now() + timedelta(days=90),
-                              min_price=0,
-                              max_price=20), driver)
 
-    with open('/home/scott/projects/mp2/test_data/airbnb_listings.html', 'w+') as f:
-        f.write(src.prettify())
+    unittest.main()
