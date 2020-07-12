@@ -13,27 +13,34 @@ import pdb
 # pdb.set_trace()
 
 def get_page_stays_list(soup):
+    """Returns the individual elements that comprise the stays listed on a page.
+    There should be 20 of them."""
     stays = soup.select('div._8ssblpx')
     return stays
 
 def relative_link(stay):
+    """Gets the realtive link for the stay. It is of the form /rooms/idnumber/..."""
     link = stay.select('a._gjfol0')
     assert len(link) == 1
     return link[0].get('href')
 
 def get_amenities_elem(driver):
-
+    """Get the amenities element for the stay."""
     try:
         elem = driver.find_element_by_css_selector('._52mr6fl')
     except:
-        # print('Failed with ._52mr6fl')
+        print('Failed with ._52mr6fl')
         pass
     try:
         elem = driver.find_element_by_css_selector('._1v4ygly5')
     except:
-        # print('Failed with ._1v4ygly5')
+        print('Failed with ._1v4ygly5')
         pass
-
+    try:
+        elem = driver.find_element_by_css_selector('._13e0raay')
+    except:
+        print('Failed with ._13e0raay')
+        pass
     return elem
 
 def get_amenities(soup):
@@ -134,14 +141,16 @@ class TestPageComponents(unittest.TestCase):
 
     def test_getAmenitiesElem(self):
         stays = get_page_stays_list(self.soup)
-        link = 'https://www.airbnb.com' + relative_link(stays[0])
-        self.driver.get(link)
-        time.sleep(5)
-        elem = get_amenities_elem(self.driver)
-        elem.click()
-        time.sleep(1)
-        soup = bs4.BeautifulSoup(self.driver.page_source, features='html.parser')
-        print(get_amenities(soup))
+        for stay in stays:
+            link = 'https://www.airbnb.com' + relative_link(stay)
+            self.driver.get(link)
+            time.sleep(5)
+            elem = get_amenities_elem(self.driver)
+            elem.click()
+            time.sleep(1)
+            soup = bs4.BeautifulSoup(self.driver.page_source, features='html.parser')
+            print(get_amenities(soup))
+            self.driver.back()
 
     def test_getRooms(self):
         stays = get_page_stays_list(self.soup)
