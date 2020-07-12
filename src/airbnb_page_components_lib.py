@@ -72,9 +72,30 @@ def get_price_summary_info(soup):
         return price
 
     def get_stars_and_reviews(stars_tag):
+        """Gets the average number of stars that previous reviewers have given
+        the stay and the the review count."""
         stars_and_review_cnt = stars_tag.contents
-        stars = float(stars_and_review_cnt[0].string)
-        reviews = int(stars_and_review_cnt[1].string)
+
+        # Airbnb can put one or two span elements or a single button element in
+        # the element that gets passed to this function. The following if statement
+        # deals with those two cases.
+        if len(stars_and_review_cnt) > 1:
+            try:
+                stars = float(stars_and_review_cnt[0].string)
+                reviews = int(re.sub(r'\D+', '', stars_and_review_cnt[1].string))
+            except Exception as e:
+                print('CANNOT EXTRACT STARS AND REVIEWS!!')
+                stars = 0
+                reviews = 0
+                raise e
+        else:
+            try:
+                stars_reviews = stars_and_review_cnt[0].split()
+                stars = float(stars_reviews[0])
+                reviews = int(re.sub(r'\D+', '', stars_reviews[1]))
+            except Exception as e:
+                raise e
+
         return (stars, reviews)
 
     div = soup.select('div._ud8a1c')[0]
@@ -87,17 +108,17 @@ def get_price_summary_info(soup):
     except IndexError:
         long_stay_discount = 0
     superhost = is_super_host(soup.select('span._nu65sd'))
-    pdb.set_trace()
 
 class TestPageComponents(unittest.TestCase):
 
-    driver = setup_webdriver(width=1100, height=1020)
-    soup = get_page(format_url(BASE_URL,
-                              offset=0, 
-                              start_date=datetime.now() + timedelta(days=90),
-                              end_date=datetime.now() + timedelta(days=93),
-                              min_price=0,
-                              max_price=20), driver)
+    def setUp(self):
+        self.driver = setup_webdriver(width=1100, height=1020)
+        self.soup = get_page(format_url(BASE_URL,
+                                  offset=0, 
+                                  start_date=datetime.now() + timedelta(days=90),
+                                  end_date=datetime.now() + timedelta(days=93),
+                                  min_price=0,
+                                  max_price=20), self.driver)
 
     def test_srcType(self):
         self.assertIsInstance(self.soup, bs4.BeautifulSoup)
@@ -145,6 +166,9 @@ class TestPageComponents(unittest.TestCase):
         time.sleep(5)
         soup = bs4.BeautifulSoup(self.driver.page_source, features='html.parser')
         rooms = get_price_summary_info(soup)
+
+    def tearDown(self):
+        self.driver.close()
 
 
 if __name__ == '__main__':
