@@ -53,16 +53,40 @@ def get_rooms(soup):
     # pdb.set_trace()
     return (guests, bedrooms, beds, baths)
 
-def get_prices(soup):
+def get_price_summary_info(soup):
+    """Gets all of the HTML in the pricing summary block. Embedded functions
+    extract the desired pieces of information: price, stars, cleaning fee,
+    long stay discount, and superhost."""
+
+    def is_super_host(tags):
+        """Checks for "Superhost" text in the input tags. Returns true if found."""
+        for tag in tags:
+            if str(tag.string) == 'Superhost':
+                return True
+        return False
+
+    def get_price_as_int(price_tag):
+        price = str(price_tag.string)
+        price = price.replace('$', '')
+        price = int(price)
+        return price
+
+    def get_stars_and_reviews(stars_tag):
+        stars_and_review_cnt = stars_tag.contents
+        stars = float(stars_and_review_cnt[0].string)
+        reviews = int(stars_and_review_cnt[1].string)
+        return (stars, reviews)
+
     div = soup.select('div._ud8a1c')[0]
-    price = soup.select('span._pgfqnw')[0]
-    stars = soup.select('button._1wlymrds')[0]
+    price = get_price_as_int(soup.select('span._pgfqnw')[0])
+    stars, reviews  = get_stars_and_reviews(soup.select('button._1wlymrds')[0])
+    #stars  = soup.select('button._1wlymrds')[0]
     cleaning_fee = soup.select('span._ra05uc')[0]
     try:
         long_stay_discount = soup.select('span._l1ngr4')[0]
     except IndexError:
         long_stay_discount = 0
-    superhost = soup.select('span._nu65sd')
+    superhost = is_super_host(soup.select('span._nu65sd'))
     pdb.set_trace()
 
 class TestPageComponents(unittest.TestCase):
@@ -120,7 +144,7 @@ class TestPageComponents(unittest.TestCase):
         self.driver.get(link)
         time.sleep(5)
         soup = bs4.BeautifulSoup(self.driver.page_source, features='html.parser')
-        rooms = get_prices(soup)
+        rooms = get_price_summary_info(soup)
 
 
 if __name__ == '__main__':
