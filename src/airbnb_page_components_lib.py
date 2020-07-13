@@ -109,19 +109,20 @@ def get_price_summary_info(soup):
         return (stars, reviews)
 
     def get_cleaning_fee(cleaning_fee_tag):
-        fee_names = cleaning_fee_tag[0].select('span._11o89bi')
-        fee_amounts = cleaning_fee_tag[0].select('span._ra05uc')
+        """Gets the cleaning fee from the price summary block."""
         cleaning_fee = 0
-        for idx, tag in enumerate(fee_names):
-            if tag.string == 'Cleaning fee':
-                cleaning_fee = int(tag.string)
-        pdb.set_trace()
+        for item in cleaning_fee_tag:
+            if item.find_all(string='Cleaning fee'):
+                pdb.set_trace()
+                cleaning_fee = item.select('span._ra05uc')[0].string
+                cleaning_fee = int(cleaning_fee.replace('$', ''))
+                
         return cleaning_fee
 
     div = soup.select('div._ud8a1c')[0]
     price = get_price_as_int(soup.select('span._pgfqnw')[0])
     stars, reviews  = get_stars_and_reviews(soup.select('button._1wlymrds')[0])
-    cleaning_fee = get_cleaning_fee(soup.select('li._ryvszj'))
+    cleaning_fee = get_cleaning_fee(soup.select('li._ryvszj') + soup.select('li._puvex1k'))
     try:
         long_stay_discount = soup.select('span._l1ngr4')[0]
     except IndexError:
