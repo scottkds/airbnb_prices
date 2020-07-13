@@ -106,14 +106,22 @@ def get_price_summary_info(soup):
                 reviews = int(re.sub(r'\D+', '', stars_reviews[1]))
             except Exception as e:
                 raise e
-
         return (stars, reviews)
+
+    def get_cleaning_fee(cleaning_fee_tag):
+        fee_names = cleaning_fee_tag[0].select('span._11o89bi')
+        fee_amounts = cleaning_fee_tag[0].select('span._ra05uc')
+        cleaning_fee = 0
+        for idx, tag in enumerate(fee_names):
+            if tag.string == 'Cleaning fee':
+                cleaning_fee = int(tag.string)
+        pdb.set_trace()
+        return cleaning_fee
 
     div = soup.select('div._ud8a1c')[0]
     price = get_price_as_int(soup.select('span._pgfqnw')[0])
     stars, reviews  = get_stars_and_reviews(soup.select('button._1wlymrds')[0])
-    #stars  = soup.select('button._1wlymrds')[0]
-    cleaning_fee = soup.select('span._ra05uc')[0]
+    cleaning_fee = get_cleaning_fee(soup.select('li._ryvszj'))
     try:
         long_stay_discount = soup.select('span._l1ngr4')[0]
     except IndexError:
