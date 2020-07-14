@@ -110,13 +110,14 @@ def get_price_summary_info(soup):
 
     def get_cleaning_fee(cleaning_fee_tag):
         """Gets the cleaning fee from the price summary block."""
+        assert cleaning_fee_tag != []
         cleaning_fee = 0
         for item in cleaning_fee_tag:
             if item.find_all(string='Cleaning fee'):
-                pdb.set_trace()
                 cleaning_fee = item.select('span._ra05uc')[0].string
                 cleaning_fee = int(cleaning_fee.replace('$', ''))
                 
+        pdb.set_trace()
         return cleaning_fee
 
     div = soup.select('div._ud8a1c')[0]

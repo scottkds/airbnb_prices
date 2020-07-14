@@ -12,6 +12,7 @@ import time
 from collections import defaultdict
 from datetime import datetime, timedelta
 import unittest
+import pdb
 
 START_DATE = datetime.now() + timedelta(days=90)
 END_DATE = datetime.now() + timedelta(days=93)
@@ -135,6 +136,10 @@ def number_of_stays_page_bottom(soup):
     n_to_n_of_stays = list(map(to_int, n_to_n_of_stays.split()))
     return n_to_n_of_stays
 
+def get_json_data(soup):
+    pdb.set_trace()
+    pass
+
 class TestAirbnbScrapes(unittest.TestCase):
 
     maxDiff = None
@@ -213,6 +218,16 @@ class TestAirbnbScrapes(unittest.TestCase):
         print(price_ranges)
         self.assertIsInstance(price_ranges, list)
         self.assertTrue(len(price_ranges) > 0)
+
+    def test_getJson(self):
+        url = format_url(BASE_URL,
+                         offset=40, 
+                         start_date=datetime.now() + timedelta(days=90),
+                         end_date=datetime.now() + timedelta(days=93),
+                         min_price=20,
+                         max_price=40)
+        json = get_json_data(get_page(url, self.driver))
+
 
     def tearDown(self):
         self.driver.close()
