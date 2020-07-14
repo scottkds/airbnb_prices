@@ -40,10 +40,10 @@ def setup_webdriver(width=800, height=600):
     return driver
 
 
-def get_page(url, driver):
+def get_page(url, driver, delay=5):
     """Returns the BeautifulSoup object of the page source."""
     driver.get(url)
-    time.sleep(4)
+    time.sleep(delay)
     return BeautifulSoup(driver.page_source, features='html.parser')
     # return driver.page_source
 
@@ -137,6 +137,17 @@ def number_of_stays_page_bottom(soup):
     return n_to_n_of_stays
 
 def get_json_data(soup):
+    """Retrieves a json object from the page source. The json object contains
+    loads of airbnb room data. It isn't always present. The reason is isn't
+    always there is unknown."""
+    # Below is the tag that contains the json object with a bunch of room data.
+    # <script data-state="true" id="data-state" type="application/json">
+    try:
+        json_object = json.loads(soup.find(id='data-state').string)
+    except Exception as e:
+        json_object = {}
+        raise e
+    
     pdb.set_trace()
     pass
 
@@ -226,7 +237,7 @@ class TestAirbnbScrapes(unittest.TestCase):
                          end_date=datetime.now() + timedelta(days=93),
                          min_price=20,
                          max_price=40)
-        json = get_json_data(get_page(url, self.driver))
+        json = get_json_data(get_page(url, self.driver, delay=10))
 
 
     def tearDown(self):
