@@ -136,10 +136,10 @@ def number_of_stays_page_bottom(soup):
     n_to_n_of_stays = list(map(to_int, n_to_n_of_stays.split()))
     return n_to_n_of_stays
 
-def get_json_data(soup):
+def get_listings_from_json(soup):
     """Retrieves a json object from the page source. The json object contains
     loads of airbnb room data. It isn't always present. The reason is isn't
-    always there is unknown."""
+    always there hasn't been worked out yet."""
     # Below is the tag that contains the json object with a bunch of room data.
     # <script data-state="true" id="data-state" type="application/json">
     try:
@@ -147,8 +147,25 @@ def get_json_data(soup):
     except Exception as e:
         json_object = {}
         raise e
-    
-    pdb.set_trace()
+    # Below is how the room data is burried in the json object. It would be
+    # possible to put all this on one line but I think this better shows how deep
+    # The information is burried and the path to it.
+    rooms = json_object['niobeClientData']
+    rooms = rooms['__niobe_denormalized']
+    rooms = rooms['queries']
+    rooms = rooms[0][1]
+    rooms = rooms['dora']
+    rooms = rooms['exploreV3']
+    rooms = rooms['sections']
+    rooms = rooms[0]
+    rooms = rooms['items']
+    listings = [room['listing'] for room in rooms]
+    return listings
+
+
+def get_listings_data(listings):
+    """Returns a dictionary of lists. Each key is the name of the data element
+    in the list."""
     pass
 
 class TestAirbnbScrapes(unittest.TestCase):
@@ -230,14 +247,17 @@ class TestAirbnbScrapes(unittest.TestCase):
         self.assertIsInstance(price_ranges, list)
         self.assertTrue(len(price_ranges) > 0)
 
-    def test_getJson(self):
+    def test_getListings(self):
         url = format_url(BASE_URL,
                          offset=40, 
                          start_date=datetime.now() + timedelta(days=90),
                          end_date=datetime.now() + timedelta(days=93),
                          min_price=20,
                          max_price=40)
-        json = get_json_data(get_page(url, self.driver, delay=10))
+        listings = get_listings_from_json(get_page(url, self.driver, delay=10))
+        self.assertEqual(len(listings), 20)
+        for listing in listings:
+            self.assertIsInstance(listing, dict)
 
 
     def tearDown(self):
