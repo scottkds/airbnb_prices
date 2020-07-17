@@ -11,6 +11,7 @@ import json
 import time
 from collections import defaultdict
 from datetime import datetime, timedelta
+from collections import defaultdict
 import unittest
 import pdb
 
@@ -163,10 +164,16 @@ def get_listings_from_json(soup):
     return listings
 
 
-def get_listings_data(listings):
+def get_listings_data(listings, keys, listing_data):
     """Returns a dictionary of lists. Each key is the name of the data element
     in the list."""
-    pass
+
+    for listing in listings:
+        for key in keys:
+            listing_data[key].append(listing[key])
+
+    return listing_data
+
 
 class TestAirbnbScrapes(unittest.TestCase):
 
@@ -258,6 +265,23 @@ class TestAirbnbScrapes(unittest.TestCase):
         self.assertEqual(len(listings), 20)
         for listing in listings:
             self.assertIsInstance(listing, dict)
+
+    def test_getListingData(self):
+        url = format_url(BASE_URL,
+                         offset=40, 
+                         start_date=datetime.now() + timedelta(days=90),
+                         end_date=datetime.now() + timedelta(days=93),
+                         min_price=20,
+                         max_price=40)
+        listings = get_listings_from_json(get_page(url, self.driver, delay=10))
+        keys = ['lat', 'lng', 'id']
+        listing_data = get_listings_data(listings, keys, defaultdict(list))
+        print('=' * 30)
+        print(listing_data)
+        print('=' * 30)
+        self.assertIsInstance(listing_data, dict)
+        for key in keys:
+            self.assertTrue(key in listing_data)
 
 
     def tearDown(self):
