@@ -12,6 +12,7 @@ import time
 from collections import defaultdict
 from datetime import datetime, timedelta
 from collections import defaultdict
+from math import acos, sin, cos
 import unittest
 import pdb
 
@@ -174,6 +175,21 @@ def get_listings_data(listings, keys, listing_data):
 
     return listing_data
 
+def linear_distance(latitude1, longitude1, latitude2, longitude2):
+    """Calculates the distance between two point with values given in
+    latitude and longitude.
+    Source: https://support.sisense.com/hc/en-us/articles/230644288-Calculate-Distance-Between-Two-Points-Using-Latitude-and-Longitude
+    # Acos(sin(PI()*latitude1/180.0)*sin(PI()*latitude2/180.0)+cos(PI()*latitude1/180.0)*cos(PI()*latitude2/180.0)*cos(PI()*longitude1/180.0-PI()*longitude2/180.0))*6378"""
+    PI = 3.14159
+    distance = acos( sin(PI * latitude1 / 180.0) * \
+                     sin(PI * latitude2 / 180.0) + \
+                     cos(PI * latitude1 / 180.0) * \
+                     cos(PI * latitude2 / 180.0) * \
+                     cos(PI * longitude1 / 180.0 - \
+                     PI * longitude2 / 180.0) ) * 6378
+    return distance
+
+
 
 class TestAirbnbScrapes(unittest.TestCase):
 
@@ -282,6 +298,23 @@ class TestAirbnbScrapes(unittest.TestCase):
         self.assertIsInstance(listing_data, dict)
         for key in keys:
             self.assertTrue(key in listing_data)
+
+    def test_linearDistance(self):
+        # First point is Broomfield Colorado
+        latitude1 = 39.923988
+        longitude1 = -105.081657
+        # Second point is Salt Lake City Utah
+        latitude2 = 40.760780
+        longitude2 = -111.891045
+        distance = linear_distance(latitude1, longitude1, latitude2, longitude2)
+        self.assertTrue(583 < distance < 586)
+        latitude1 = 4.6585
+        longitude1 = -74.0935
+        latitude2 = 4.6057
+        longitude2 = -74.0555
+        distance = linear_distance(latitude1, longitude1, latitude2, longitude2)
+        print(distance)
+
 
 
     def tearDown(self):

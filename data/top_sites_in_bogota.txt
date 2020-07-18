@@ -1,0 +1,13 @@
+1. Gold Museum                      4.6019° N, 74.0718° W
+2. Monserrate                       4.6057° N, 74.0555° W
+3. Bolivar Square                   4.5981° N, 74.0760° W
+4. Museo Boltero                    4.5968° N, 74.0732° W
+4. Museo Nacional de Colombia       4.6155° N, 74.0683° W
+5. Bogota Botanical Garden          4.6682° N, 74.1000° W
+6. Simon Bolivar Park               4.6585° N, 74.0935° W
+7. Museo Quinta Bolivar             4.6025° N, 74.0630° W
+8. Catedral Primada de Colombia     4.5973° N, 74.0747° W
+9. Maloka Interavtive Center        4.6551° N, 74.1094° W
+10. Chorro de Quevedo               4.5972° N, 74.0697° W
+11. Parque de los Novios            4.6548° N, 74.0812° W
+
