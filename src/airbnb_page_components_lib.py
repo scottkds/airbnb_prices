@@ -59,7 +59,9 @@ def get_rooms(soup):
     spans = div[0].select('span')
     span_strings = [re.sub(r'\D+', '', str(span.string)) for span in spans]
     guests = int(span_strings[0])
-    if span_strings[2] == 'Studio':
+    # When the type of stay is a Studio there are no digits to convert to a int.
+    if span_strings[2] == '':
+        pdb.set_trace()
         bedrooms = 0
     else:
         bedrooms = int(span_strings[2])
@@ -129,6 +131,11 @@ def get_price_summary_info(soup):
         stars, reviews  = get_stars_and_reviews(soup.select('button._1wlymrds')[0])
     except IndexError:
         stars, reviews = (0, 0)
+    except TypeError:
+        stars = 0
+        reviews = soup.select('span._bq6krt')[0]
+        reviews = re.sub(r'\D+', '', reviews)
+
     cleaning_fee = get_cleaning_fee(soup.select('li._ryvszj') + soup.select('li._puvex1k'))
     try:
         long_stay_discount = soup.select('span._l1ngr4')[0]
