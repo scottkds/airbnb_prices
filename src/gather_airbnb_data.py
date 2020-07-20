@@ -4,6 +4,7 @@ from airbnb_lib import get_listings_from_json, get_listings_data
 import airbnb_page_components_lib as pc
 from datetime import datetime, timedelta
 from collections import defaultdict
+import time
 import re
 import pickle
 import sys
@@ -72,12 +73,13 @@ for pr in price_ranges:
         for stay in stays:
             link = 'https://www.airbnb.com' + pc.relative_link(stay)
             room_id = pc.get_id(link)
-            price, stars, reviews, cleaning_fee, long_stay_discount, superhost = pc.get_price_summary_info(soup)
-            guests, bedrooms, beds, baths = pc.get_rooms(soup)
+            stay_soup = get_page(link, driver, delay=5)
+            price, stars, reviews, cleaning_fee, long_stay_discount, superhost = pc.get_price_summary_info(stay_soup)
+            guests, bedrooms, beds, baths = pc.get_rooms(stay_soup)
             amenities_element = pc.get_amenities_elem(driver)
             amenities_element.click()
-            amenities_soup = bs4.BeautifulSoup(self.driver.page_source, features='html.parser')
-            amenitites = pc.get_amenities(amenities_soup)
+            time.sleep(2)
+            amenities = pc.get_amenities(driver.page_source)
             amenities_data[room_id] = amenities
             driver.back()
 

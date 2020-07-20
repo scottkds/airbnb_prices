@@ -43,9 +43,10 @@ def get_amenities_elem(driver):
         pass
     return elem
 
-def get_amenities(soup):
+def get_amenities(page_source):
     """Gets the amenities listed after clicking he "Show All Amenities" button
     on the page. Returns a list."""
+    soup = bs4.BeautifulSoup(page_source, features='html.parser')
     amenities = soup.select('div._vzrbjl')
     amenities_list = [amenity.contents[0] for amenity in amenities \
                         if isinstance(amenity.contents[0], bs4.element.NavigableString)]
@@ -117,12 +118,14 @@ def get_price_summary_info(soup):
                 cleaning_fee = item.select('span._ra05uc')[0].string
                 cleaning_fee = int(cleaning_fee.replace('$', ''))
                 
-        pdb.set_trace()
         return cleaning_fee
 
     div = soup.select('div._ud8a1c')[0]
     price = get_price_as_int(soup.select('span._pgfqnw')[0])
-    stars, reviews  = get_stars_and_reviews(soup.select('button._1wlymrds')[0])
+    try:
+        stars, reviews  = get_stars_and_reviews(soup.select('button._1wlymrds')[0])
+    except IndexError:
+        stars, reviews = (0, 0)
     cleaning_fee = get_cleaning_fee(soup.select('li._ryvszj') + soup.select('li._puvex1k'))
     try:
         long_stay_discount = soup.select('span._l1ngr4')[0]
