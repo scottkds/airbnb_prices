@@ -130,6 +130,18 @@ def get_price_summary_info(soup):
         long_stay_discount = 0
     superhost = is_super_host(soup.select('span._nu65sd'))
 
+    return (price, stars, reviews, cleaning_fee, long_stay_discount, superhost)
+
+
+def get_id(link):
+    room_id_match = re.search(r'https://www.airbnb.com/rooms/(\d+)\?', link)
+    try:
+        room_id = int(room_id_match.group(1))
+    except Exception as e:
+        raise e
+
+    return room_id
+
 class TestPageComponents(unittest.TestCase):
     """ Unit tests for page components."""
 
@@ -192,6 +204,10 @@ class TestPageComponents(unittest.TestCase):
         time.sleep(5)
         soup = bs4.BeautifulSoup(self.driver.page_source, features='html.parser')
         rooms = get_price_summary_info(soup)
+
+    def test_getLink(self):
+        some_url = 'https://www.airbnb.com/rooms/30691310?location=Bogota%2C%20Colombia&check_in=2020-10-01&check_out=2020-10-05&source_impression_id=p3_1595191777_n7mbZbfdoVOXHj8H&guests=1&adults=1'
+        self.assertEqual(get_id(some_url), 30691310)
 
     def tearDown(self):
         self.driver.close()
