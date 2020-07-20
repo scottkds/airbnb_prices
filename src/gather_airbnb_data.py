@@ -23,8 +23,8 @@ import pdb
 #   g. --Discount
 #   h. --Amenitites
 #   i. --Id
-#   j. Latitude
-#   k. Longitude
+#   j. --Latitude
+#   k. --Longitude
 # 2. Aggregate data into a DataFrame
 # 3. Calculate distances to Bogota tourist attractions
 # 4. Model Linear Regression, Ridge, Lasso, random forest, SVM regressor
@@ -74,7 +74,7 @@ for pr in price_ranges:
         for stay in stays:
             link = 'https://www.airbnb.com' + pc.relative_link(stay)
             room_id = pc.get_id(link)
-            stay_soup = get_page(link, driver, delay=5)
+            stay_soup = get_page(link, driver, delay=7)
             price, stars, reviews, cleaning_fee, long_stay_discount, superhost = pc.get_price_summary_info(stay_soup)
             guests, bedrooms, beds, baths = pc.get_rooms(stay_soup)
             amenities_element = pc.get_amenities_elem(driver)

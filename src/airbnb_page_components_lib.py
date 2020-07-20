@@ -136,7 +136,8 @@ def get_price_summary_info(soup):
         reviews = soup.select('span._bq6krt')[0]
         reviews = re.sub(r'\D+', '', reviews)
 
-    cleaning_fee = get_cleaning_fee(soup.select('li._ryvszj') + soup.select('li._puvex1k'))
+    cleaning_fee = get_cleaning_fee(soup.select('li._ryvszj') + \
+                                    soup.select('li._puvex1k'))
     try:
         long_stay_discount = soup.select('span._l1ngr4')[0]
     except IndexError:
