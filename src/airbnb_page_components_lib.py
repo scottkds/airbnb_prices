@@ -59,7 +59,10 @@ def get_rooms(soup):
     spans = div[0].select('span')
     span_strings = [re.sub(r'\D+', '', str(span.string)) for span in spans]
     guests = int(span_strings[0])
-    bedrooms = int(span_strings[2])
+    if span_strings[2] == 'Studio':
+        bedrooms = 0
+    else:
+        bedrooms = int(span_strings[2])
     beds = int(span_strings[4])
     baths = int(span_strings[6])
     return (guests, bedrooms, beds, baths)

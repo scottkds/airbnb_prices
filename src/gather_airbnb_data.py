@@ -8,6 +8,7 @@ import time
 import re
 import pickle
 import sys
+import pdb
 
 #==============================================================================
 # TODO
@@ -82,6 +83,7 @@ for pr in price_ranges:
             amenities = pc.get_amenities(driver.page_source)
             amenities_data[room_id] = amenities
             driver.back()
+    pdb.set_trace()
 
 
 
