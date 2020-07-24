@@ -36,7 +36,7 @@ BASE_URL = pc.BASE_URL
 START_DATE = datetime(2020, 10, 1)
 END_DATE = datetime(2020, 10, 5)
 
-room_data = {}
+room_data = defaultdict(list)
 amenities_data = {}
 json_data = defaultdict(list)
 
@@ -74,18 +74,39 @@ for pr in price_ranges:
         for stay in stays:
             link = 'https://www.airbnb.com' + pc.relative_link(stay)
             room_id = pc.get_id(link)
+            print(link)
+            room_data['id'].append(room_id)
             stay_soup = get_page(link, driver, delay=7)
             price, stars, reviews, cleaning_fee, long_stay_discount, superhost = pc.get_price_summary_info(stay_soup)
+            room_data['price'].append(price)
+            room_data['stars'].append(stars)
+            room_data['reviews'].append(reviews)
+            room_data['cleaning_fee'].append(cleaning_fee)
+            room_data['long_stay_discount'].append(long_stay_discount)
+            room_data['superhost'].append(superhost)
             guests, bedrooms, beds, baths = pc.get_rooms(stay_soup)
+            room_data['guests'].append(guests)
+            room_data['bedrooms'].append(bedrooms)
+            room_data['beds'].append(beds)
+            room_data['baths'].append(baths)
             amenities_element = pc.get_amenities_elem(driver)
             amenities_element.click()
             time.sleep(2)
             amenities = pc.get_amenities(driver.page_source)
             amenities_data[room_id] = amenities
             driver.back()
-        pdb.set_trace()
+            driver.back()
+
+        #pdb.set_trace()
 
 
+with open('room_data.pkl', 'wb') as f:
+    pickle.dump(room_data, f)
+f.close()
+
+with open('amenities_data.pkl', 'wb') as f:
+    pickle.dump(amenities_data, f)
+f.close()
 
 
 print(price_ranges)

@@ -29,12 +29,12 @@ def get_amenities_elem(driver):
     try:
         elem = driver.find_element_by_css_selector('._52mr6fl')
     except:
-        print('Failed with ._52mr6fl')
+        #print('Failed with ._52mr6fl')
         pass
     try:
         elem = driver.find_element_by_css_selector('._1v4ygly5')
     except:
-        print('Failed with ._1v4ygly5')
+        #print('Failed with ._1v4ygly5')
         pass
     try:
         elem = driver.find_element_by_css_selector('._13e0raay')
@@ -111,7 +111,9 @@ def get_price_summary_info(soup):
                 stars = float(stars_reviews[0])
                 reviews = int(re.sub(r'\D+', '', stars_reviews[1]))
             except Exception as e:
-                raise e
+                print(e)
+                stars = 0
+                reviews = 0
         return (stars, reviews)
 
     def get_cleaning_fee(cleaning_fee_tag):
