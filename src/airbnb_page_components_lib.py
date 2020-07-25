@@ -59,7 +59,7 @@ def get_rooms(soup):
     div = soup.select('div._tqmy57')
     spans = div[0].select('span')
     span_strings = [span.string for span in spans]
-    pdb.set_trace()
+    #pdb.set_trace()
     for string in span_strings:
         if re.search(r'guest', string):
             guests = int(re.sub(r'\D+', '', string))
@@ -123,7 +123,10 @@ def get_price_summary_info(soup):
 
     def get_cleaning_fee(cleaning_fee_tag):
         """Gets the cleaning fee from the price summary block."""
-        assert cleaning_fee_tag != []
+        try:
+            assert cleaning_fee_tag != []
+        except:
+            pdb.set_trace()
         cleaning_fee = 0
         for item in cleaning_fee_tag:
             if item.find_all(string='Cleaning fee'):
@@ -132,8 +135,12 @@ def get_price_summary_info(soup):
                 
         return cleaning_fee
 
-    div = soup.select('div._ud8a1c')[0]
-    price = get_price_as_int(soup.select('span._pgfqnw')[0])
+    #div = soup.select('div._ud8a1c')[0]
+    try:
+        price = get_price_as_int(soup.select('span._pgfqnw')[0])
+    except IndexError as e:
+        print(e)
+        pdb.set_trace()
     try:
         stars, reviews  = get_stars_and_reviews(soup.select('button._1wlymrds')[0])
     except IndexError:

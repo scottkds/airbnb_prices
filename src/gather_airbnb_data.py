@@ -31,11 +31,18 @@ import pdb
 # 5. Visualizations
 # 6. Publication
 
+def nbr_props():
+    i = 1
+    while True:
+        yield i
+        i += 1
+
 
 BASE_URL = pc.BASE_URL
 START_DATE = datetime(2020, 10, 1)
 END_DATE = datetime(2020, 10, 5)
 
+nprops = nbr_props()
 room_data = defaultdict(list)
 amenities_data = {}
 json_data = defaultdict(list)
@@ -74,6 +81,7 @@ for pr in price_ranges:
         for stay in stays:
             link = 'https://www.airbnb.com' + pc.relative_link(stay)
             room_id = pc.get_id(link)
+            print('Number of properties:', next(nprops))
             print(link)
             room_data['id'].append(room_id)
             stay_soup = get_page(link, driver, delay=7)
