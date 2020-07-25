@@ -108,7 +108,9 @@ with open('amenities_data.pkl', 'wb') as f:
     pickle.dump(amenities_data, f)
 f.close()
 
-
+with open('json_data.pkl', 'wb') as f:
+    pickle.dump(json_data, f)
+f.close()
 print(price_ranges)
 
 driver.close()

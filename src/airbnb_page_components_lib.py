@@ -55,18 +55,23 @@ def get_amenities(page_source):
 def get_rooms(soup):
     """Returns the number of guests, bedrooms, beds, and bathrooms the stay
     has."""
+    guests, bedrooms, beds, baths = (0, 0, 0, 0)
     div = soup.select('div._tqmy57')
     spans = div[0].select('span')
-    span_strings = [re.sub(r'\D+', '', str(span.string)) for span in spans]
-    guests = int(span_strings[0])
-    # When the type of stay is a Studio there are no digits to convert to a int.
-    if span_strings[2] == '':
-        pdb.set_trace()
-        bedrooms = 0
-    else:
-        bedrooms = int(span_strings[2])
-    beds = int(span_strings[4])
-    baths = int(span_strings[6])
+    span_strings = [span.string for span in spans]
+    pdb.set_trace()
+    for string in span_strings:
+        if re.search(r'guest', string):
+            guests = int(re.sub(r'\D+', '', string))
+        elif re.search(r'bedroom', string):
+            bedrooms = int(re.sub(r'\D+', '', string))
+        elif re.search(r'Studio', string):
+            bedrooms = 0
+        elif re.search(r'bath', string):
+            baths = int(re.sub(r'\D+', '', string))
+        elif re.search(r'bed', string):
+            beds = int(re.sub(r'\D+', '', string))
+    
     return (guests, bedrooms, beds, baths)
 
 def get_price_summary_info(soup):
@@ -104,7 +109,7 @@ def get_price_summary_info(soup):
                 print('CANNOT EXTRACT STARS AND REVIEWS!!')
                 stars = 0
                 reviews = 0
-                raise e
+                print(e)
         else:
             try:
                 stars_reviews = stars_and_review_cnt[0].split()
