@@ -26,21 +26,23 @@ def relative_link(stay):
 
 def get_amenities_elem(driver):
     """Get the amenities element for the stay."""
-    try:
-        elem = driver.find_element_by_css_selector('._52mr6fl')
-    except:
-        #print('Failed with ._52mr6fl')
-        pass
-    try:
-        elem = driver.find_element_by_css_selector('._1v4ygly5')
-    except:
-        #print('Failed with ._1v4ygly5')
-        pass
-    try:
-        elem = driver.find_element_by_css_selector('._13e0raay')
-    except:
-        print('Failed with ._13e0raay')
-        pass
+    for i n range(2)
+        try:
+            elem = driver.find_element_by_css_selector('._52mr6fl')
+        except:
+            #print('Failed with ._52mr6fl')
+            pass
+        try:
+            elem = driver.find_element_by_css_selector('._1v4ygly5')
+        except:
+            #print('Failed with ._1v4ygly5')
+            pass
+        try:
+            elem = driver.find_element_by_css_selector('._13e0raay')
+        except:
+            print('Failed with ._13e0raay')
+            pass
+        time.sleep(10)
     return elem
 
 def get_amenities(page_source):
@@ -141,8 +143,7 @@ def get_price_summary_info(soup):
     try:
         price = get_price_as_int(soup.select('span._pgfqnw')[0])
     except IndexError as e:
-        print(e)
-        pdb.set_trace()
+        raise e
     try:
         stars, reviews  = get_stars_and_reviews(soup.select('button._1wlymrds')[0])
     except IndexError:

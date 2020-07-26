@@ -84,8 +84,18 @@ for pr in price_ranges:
             print('Number of properties:', next(nprops))
             print(link)
             room_data['id'].append(room_id)
-            stay_soup = get_page(link, driver, delay=7)
-            price, stars, reviews, cleaning_fee, long_stay_discount, superhost = pc.get_price_summary_info(stay_soup)
+            stay_soup = get_page(link, driver, delay=9)
+
+            try:
+                price, stars, reviews, cleaning_fee, long_stay_discount, superhost = pc.get_price_summary_info(stay_soup)
+            except:
+                stay_soup = get_page(link, driver, delay=15)
+                try:
+                    price, stars, reviews, cleaning_fee, long_stay_discount, superhost = pc.get_price_summary_info(stay_soup)
+                except:
+                    price, stars, reviews, cleaning_fee, long_stay_discount, superhost = \
+                            (999999, 999999, 999999, 999999, 999999, False)
+
             room_data['price'].append(price)
             room_data['stars'].append(stars)
             room_data['reviews'].append(reviews)
