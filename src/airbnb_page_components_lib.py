@@ -123,11 +123,13 @@ def get_price_summary_info(soup):
 
     def get_cleaning_fee(cleaning_fee_tag):
         """Gets the cleaning fee from the price summary block."""
+        cleaning_fee = 0
         try:
             assert cleaning_fee_tag != []
         except:
-            pdb.set_trace()
-        cleaning_fee = 0
+            # Sometimes I just can't find the tags in the page_source.
+            # I will filter out rooms with a cleaning fee of 999999
+            cleaning_fee = 999999
         for item in cleaning_fee_tag:
             if item.find_all(string='Cleaning fee'):
                 cleaning_fee = item.select('span._ra05uc')[0].string
