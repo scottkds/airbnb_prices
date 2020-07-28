@@ -26,7 +26,7 @@ def relative_link(stay):
 
 def get_amenities_elem(driver):
     """Get the amenities element for the stay."""
-    for i n range(2)
+    for i in range(2):
         try:
             elem = driver.find_element_by_css_selector('._52mr6fl')
         except:
@@ -71,6 +71,8 @@ def get_rooms(soup):
             bedrooms = 0
         elif re.search(r'bath', string):
             baths = int(re.sub(r'\D+', '', string))
+        elif re.search(r'Half-bath', string):
+            baths = 0.5
         elif re.search(r'bed', string):
             beds = int(re.sub(r'\D+', '', string))
     
@@ -156,7 +158,8 @@ def get_price_summary_info(soup):
     cleaning_fee = get_cleaning_fee(soup.select('li._ryvszj') + \
                                     soup.select('li._puvex1k'))
     try:
-        long_stay_discount = soup.select('span._l1ngr4')[0]
+        long_stay_tag = soup.select('span._l1ngr4')[0]
+        long_stay_discount = int(re.sub(r'\D+', '', long_stay_tag.string))
     except IndexError:
         long_stay_discount = 0
     superhost = is_super_host(soup.select('span._nu65sd'))
