@@ -89,7 +89,16 @@ for pr in price_ranges[:]:
     price_min = pr[1]
     price_max = pr[2]
     for page in range(nbr_pages):
-        driver = setup_webdriver(width=1100, height=1020)
+
+        try:
+            driver = setup_webdriver(width=1100, height=1020)
+        except OSError:
+            time.sleep(60)
+            try:
+                driver = setup_webdriver(width=1100, height=1020)
+            except Exception as e:
+                raise e
+
         url = format_url(BASE_URL, 
                          next(offset_gen), 
                          start_date=START_DATE, 
