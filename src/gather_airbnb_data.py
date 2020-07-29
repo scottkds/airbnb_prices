@@ -83,7 +83,7 @@ driver.close()
 print(price_ranges)
 #exit()
 
-for pr in price_ranges[:]:
+for pr in price_ranges[3:]:
     offset_gen = page_offset()
     nbr_pages = pr[0] // 20 + 1
     price_min = pr[1]
@@ -128,7 +128,8 @@ for pr in price_ranges[:]:
             try:
                 price, stars, reviews, cleaning_fee, long_stay_discount, superhost = pc.get_price_summary_info(stay_soup)
                 guests, bedrooms, beds, baths = pc.get_rooms(stay_soup)
-            except:
+            except Exception as e:
+                print('Page reloading due to exception', e)
                 stay_soup = get_page(link, driver, delay=15)
                 try:
                     price, stars, reviews, cleaning_fee, long_stay_discount, superhost = pc.get_price_summary_info(stay_soup)
