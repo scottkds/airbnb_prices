@@ -171,12 +171,12 @@ def get_id(link):
     room_id_match = re.search(r'https://www.airbnb.com/rooms(/plus)?/(\d+)\?', link) 
     if room_id_match.group(1) == '/plus':
         try:
-            room_id = int(room_id_match.group(1))
+            room_id = int(room_id_match.group(2))
         except Exception as e:
             raise e
     else:
         try:
-            room_id = int(room_id_match.group(2))
+            room_id = int(room_id_match.group(1))
         except Exception as e:
             raise e
 
