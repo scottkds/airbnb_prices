@@ -9,6 +9,7 @@ import re
 import json
 import pickle
 import sys
+import gc
 import pdb
 
 #==============================================================================
@@ -83,7 +84,7 @@ driver.close()
 print(price_ranges)
 #exit()
 
-for pr in price_ranges[3:]:
+for pr in price_ranges[10:]:
     offset_gen = page_offset()
     nbr_pages = pr[0] // 20 + 1
     price_min = pr[1]
@@ -105,9 +106,19 @@ for pr in price_ranges[3:]:
                          end_date=END_DATE,
                          min_price=price_min,
                          max_price=price_max)
-        soup = get_page(url, driver, delay=15)
-        print(number_of_stays_page_bottom(soup))
-        if number_of_stays_page_bottom(soup)[1] >= pr[0]:
+        try:
+            soup = get_page(url, driver, delay=15)
+        except:
+            driver.close()
+            driver = setup_webdriver(width=1100, height=1020)
+            try:
+                soup = get_page(url, driver, delay=15)
+            except:
+                break
+
+        number_stays_bp = number_of_stays_page_bottom(soup)
+        print(number_stays_bp)
+        if number_stays_bp[0] >= number_stays_bp[2]:
             break
         stays_json = get_listings_from_json(soup)
         json_data = get_listings_data(stays_json, ['id', 'lat', 'lng'], json_data)
@@ -156,6 +167,7 @@ for pr in price_ranges[3:]:
             driver.back()
         dump_data()
         driver.close()
+        gc.collect()
         #pdb.set_trace()
 
 

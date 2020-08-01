@@ -26,7 +26,7 @@ def relative_link(stay):
 
 def get_amenities_elem(driver):
     """Get the amenities element for the stay."""
-    for i in range(2):
+    for i in range(3):
         try:
             elem = driver.find_element_by_css_selector('._52mr6fl')
         except:
@@ -168,11 +168,17 @@ def get_price_summary_info(soup):
 
 
 def get_id(link):
-    room_id_match = re.search(r'https://www.airbnb.com/rooms/(\d+)\?', link)
-    try:
-        room_id = int(room_id_match.group(1))
-    except Exception as e:
-        raise e
+    room_id_match = re.search(r'https://www.airbnb.com/rooms(/plus)?/(\d+)\?', link) 
+    if room_id_match.group(1) == '/plus':
+        try:
+            room_id = int(room_id_match.group(1))
+        except Exception as e:
+            raise e
+    else:
+        try:
+            room_id = int(room_id_match.group(2))
+        except Exception as e:
+            raise e
 
     return room_id
 
