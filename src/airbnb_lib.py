@@ -180,7 +180,7 @@ def get_listings_data(listings, keys, listing_data):
 
     for listing in listings:
         for key in keys:
-            listing_data[key].append(find_key(listing, key)
+            listing_data[key].append(find_key(listing, key))
 
     return listing_data
 
