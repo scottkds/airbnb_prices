@@ -39,6 +39,12 @@ def nbr_props():
         yield i
         i += 1
 
+def plus_room_count():
+    i = 1
+    while True:
+        yield i
+        i += 1
+
 def dump_data():
 
     with open('room_data.json', 'w') as f:
@@ -63,6 +69,7 @@ START_DATE = datetime(2020, 10, 1)
 END_DATE = datetime(2020, 10, 5)
 
 nprops = nbr_props()
+plus_rooms = plus_room_count()
 room_data = defaultdict(list)
 amenities_data = {}
 json_data = defaultdict(list)
@@ -127,44 +134,47 @@ for pr in price_ranges[10:]:
             load_stay = True
             link = 'https://www.airbnb.com' + pc.relative_link(stay)
             room_id = pc.get_id(link)
-            print('Number of properties:', next(nprops))
-            print(link)
-            room_data['id'].append(room_id)
-            stay_soup = get_page(link, driver, delay=6)
+            if room_id > 0:
+                print('Number of properties:', next(nprops))
+                print(link)
+                room_data['id'].append(room_id)
+                stay_soup = get_page(link, driver, delay=6)
 
-            # Airbnb seems to load the various aspects of a page individually.
-            # The following try/except block will try to scrape a page and if
-            # if fails it will reload the page with a longer delay. If that 
-            # fails the stay will be skipped.
-            try:
-                price, stars, reviews, cleaning_fee, long_stay_discount, superhost = pc.get_price_summary_info(stay_soup)
-                guests, bedrooms, beds, baths = pc.get_rooms(stay_soup)
-            except Exception as e:
-                print('Page reloading due to exception', e)
-                stay_soup = get_page(link, driver, delay=15)
+                # Airbnb seems to load the various aspects of a page individually.
+                # The following try/except block will try to scrape a page and if
+                # if fails it will reload the page with a longer delay. If that 
+                # fails the stay will be skipped.
                 try:
                     price, stars, reviews, cleaning_fee, long_stay_discount, superhost = pc.get_price_summary_info(stay_soup)
                     guests, bedrooms, beds, baths = pc.get_rooms(stay_soup)
-                except:
-                    load_stay = False
-            if load_stay:
-                room_data['price'].append(price)
-                room_data['stars'].append(stars)
-                room_data['reviews'].append(reviews)
-                room_data['cleaning_fee'].append(cleaning_fee)
-                room_data['long_stay_discount'].append(long_stay_discount)
-                room_data['superhost'].append(superhost)
-                room_data['guests'].append(guests)
-                room_data['bedrooms'].append(bedrooms)
-                room_data['beds'].append(beds)
-                room_data['baths'].append(baths)
-                amenities_element = pc.get_amenities_elem(driver)
-                amenities_element.click()
-                time.sleep(2)
-                amenities = pc.get_amenities(driver.page_source)
-                amenities_data[room_id] = amenities
-            driver.back()
-            driver.back()
+                except Exception as e:
+                    print('Page reloading due to exception', e)
+                    stay_soup = get_page(link, driver, delay=15)
+                    try:
+                        price, stars, reviews, cleaning_fee, long_stay_discount, superhost = pc.get_price_summary_info(stay_soup)
+                        guests, bedrooms, beds, baths = pc.get_rooms(stay_soup)
+                    except:
+                        load_stay = False
+                if load_stay:
+                    room_data['price'].append(price)
+                    room_data['stars'].append(stars)
+                    room_data['reviews'].append(reviews)
+                    room_data['cleaning_fee'].append(cleaning_fee)
+                    room_data['long_stay_discount'].append(long_stay_discount)
+                    room_data['superhost'].append(superhost)
+                    room_data['guests'].append(guests)
+                    room_data['bedrooms'].append(bedrooms)
+                    room_data['beds'].append(beds)
+                    room_data['baths'].append(baths)
+                    amenities_element = pc.get_amenities_elem(driver)
+                    amenities_element.click()
+                    time.sleep(2)
+                    amenities = pc.get_amenities(driver.page_source)
+                    amenities_data[room_id] = amenities
+                driver.back()
+                driver.back()
+            else:
+                print('Skipping "/plus room number:', next(plus_rooms))
         dump_data()
         driver.close()
         gc.collect()

@@ -13,6 +13,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 from collections import defaultdict
 from math import acos, sin, cos
+from find_key import find_key
 import unittest
 import pdb
 
@@ -161,17 +162,25 @@ def get_listings_from_json(soup):
     rooms = rooms['sections']
     rooms = rooms[0]
     rooms = rooms['items']
-    listings = [room['listing'] for room in rooms]
+    listings = []
+    for room in rooms:
+        new_room = room['listing']
+        new_room.update(room['pricingQuote'])
+        listings.append(new_room)
     return listings
 
 
 def get_listings_data(listings, keys, listing_data):
     """Returns a dictionary of lists. Each key is the name of the data element
-    in the list."""
+    in the list.
+
+    TODO: This seems bad form. Think about rewriting this function to return
+    a dictionary of key value pairs instead of accepting, modifying and returning
+    a dictionary."""
 
     for listing in listings:
         for key in keys:
-            listing_data[key].append(listing[key])
+            listing_data[key].append(find_key(listing, key)
 
     return listing_data
 
