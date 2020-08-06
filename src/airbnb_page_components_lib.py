@@ -24,9 +24,10 @@ def relative_link(stay):
     assert len(link) == 1
     return link[0].get('href')
 
-def get_amenities_elem(driver):
+def get_amenities_elem(driver, delay=2):
     """Get the amenities element for the stay."""
-    for i in range(3):
+    elem = None
+    for i in range(9):
         try:
             elem = driver.find_element_by_css_selector('._52mr6fl')
         except:
@@ -42,7 +43,13 @@ def get_amenities_elem(driver):
         except:
             print('Failed with ._13e0raay')
             pass
-        time.sleep(10)
+        if elem:
+            break
+        else:
+            if driver.current_url == 'https://www.airbnb.com/s/homes':
+                return None
+            else:
+                time.sleep(delay*i)
     return elem
 
 def get_amenities(page_source):
